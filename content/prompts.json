@@ -1,0 +1,62 @@
+[
+  {
+    "id": "smell-back",
+    "theme": "sense",
+    "text": "What's a smell that takes you back?"
+  },
+  {
+    "id": "place-loved",
+    "theme": "place",
+    "text": "Tell me about a place you loved."
+  },
+  {
+    "id": "song-move",
+    "theme": "sound",
+    "text": "What song makes you want to move?"
+  },
+  {
+    "id": "kitchen-table",
+    "theme": "people",
+    "text": "Who comes to mind when you think of a kitchen table?"
+  },
+  {
+    "id": "morning-sound",
+    "theme": "routine",
+    "text": "What did a regular morning used to sound like?"
+  },
+  {
+    "id": "kept-clothing",
+    "theme": "object",
+    "text": "What is a piece of clothing you kept for a long time?"
+  },
+  {
+    "id": "same-each-day",
+    "theme": "routine",
+    "text": "What is a small thing you do the same way each day?"
+  },
+  {
+    "id": "remembered-window",
+    "theme": "place",
+    "text": "Tell me about a window you remember."
+  },
+  {
+    "id": "taste-of-a-year",
+    "theme": "sense",
+    "text": "What food tastes like a certain year to you?"
+  },
+  {
+    "id": "known-path",
+    "theme": "place",
+    "text": "Was there a road or a path you knew by heart?"
+  },
+  {
+    "id": "hands-made",
+    "theme": "hands",
+    "text": "What did your hands used to make or mend?"
+  },
+  {
+    "id": "time-of-day",
+    "theme": "time",
+    "text": "Is there a time of day you keep for yourself?"
+  }
+]
