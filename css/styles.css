@@ -257,12 +257,13 @@ h2 {
 .placeholder {
   max-width: 40rem;
   margin: 0 auto;
-  padding: 0 1.25rem 4rem;
+  padding: 1.25rem 1.25rem 4rem;
+  border-top: 1px solid var(--fg);
 }
 
 .placeholder h2 {
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--fg);
+  width: fit-content;
+  max-width: 100%;
 }
 
 .placeholder p {
