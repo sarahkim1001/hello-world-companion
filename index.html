@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: blob:; media-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'">
+  <title>hello world companion</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="loading-bar" class="loading-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-hidden="true">
+    <div class="loading-bar__fill" id="loading-fill"></div>
+  </div>
+  <a class="skip-link" href="#main" id="skip-link" hidden></a>
+  <header class="shell">
+    <p class="badge" id="draft-badge" hidden></p>
+    <div class="shell-actions">
+      <button type="button" class="button" id="open-settings" aria-pressed="false" hidden></button>
+      <button type="button" class="button" id="pause-stop" aria-pressed="false" aria-controls="pause-note" hidden></button>
+    </div>
+    <p id="pause-note" class="pause-note" role="status" hidden></p>
+  </header>
+  <main id="main">
+    <section class="screen" id="screen-welcome" aria-labelledby="welcome-title" hidden>
+      <h1 id="welcome-title" tabindex="-1"></h1>
+      <div id="chat-log" class="chat-log" role="log" aria-live="polite" aria-relevant="additions" aria-atomic="false" aria-busy="false"></div>
+      <div id="typing-line" class="chat-line typing-line" aria-hidden="true"></div>
+      <div class="actions">
+        <button type="button" class="button" id="skip" hidden></button>
+        <button type="button" class="button button--primary" id="begin" aria-controls="screen-root" hidden></button>
+      </div>
+    </section>
+    <div id="screen-root" class="screen" hidden></div>
+    <p id="load-note" class="load-note" role="status" hidden></p>
+  </main>
+  <noscript>
+    <p class="load-note">this page needs javascript to show the draft.</p>
+  </noscript>
+  <script src="content/copy.js"></script>
+  <script src="content/prompts.js"></script>
+  <script src="content/soundscapes.js"></script>
+  <script src="content/sample-drawings.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/week.js"></script>
+  <script src="js/flow.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
