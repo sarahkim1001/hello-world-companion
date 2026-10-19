@@ -121,6 +121,9 @@
     }
     if (target && typeof target.focus === "function") {
       target.focus();
+      if (typeof target.scrollIntoView === "function") {
+        target.scrollIntoView({ block: "start" });
+      }
     }
     var settingsButton = $("open-settings");
     if (settingsButton) {

@@ -293,6 +293,7 @@
     $("screen-welcome").hidden = false;
     $("screen-root").hidden = true;
     $("welcome-title").focus();
+    $("welcome-title").scrollIntoView({ block: "start" });
   }
 
   function hideWelcome() {
