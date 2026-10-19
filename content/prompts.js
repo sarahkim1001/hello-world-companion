@@ -1,4 +1,6 @@
-[
+/* Memory prompts. Edit the prompts here. The page loads this file with a script tag. */
+window.HelloWorldContent = window.HelloWorldContent || {};
+window.HelloWorldContent.prompts = [
   {
     "id": "smell-back",
     "theme": "sense",
@@ -59,4 +61,4 @@
     "theme": "time",
     "text": "Is there a time of day you keep for yourself?"
   }
-]
+];

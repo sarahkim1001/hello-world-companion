@@ -221,6 +221,8 @@
     $("draft-badge").hidden = false;
     $("pause-stop").textContent = copy.shell.pauseStop;
     $("pause-stop").hidden = false;
+    $("open-settings").textContent = copy.shell.settings;
+    $("open-settings").hidden = false;
     $("skip-link").textContent = copy.shell.skipToContent;
     $("skip-link").hidden = false;
     $("welcome-title").textContent = copy.welcome.title;
@@ -245,6 +247,9 @@
     paused = !paused;
     document.documentElement.setAttribute("data-paused", paused ? "true" : "false");
     $("pause-stop").setAttribute("aria-pressed", paused ? "true" : "false");
+    if (window.HelloWorldFlow) {
+      window.HelloWorldFlow.setPaused(paused);
+    }
     var note = $("pause-note");
     if (paused) {
       note.hidden = false;
@@ -284,19 +289,41 @@
     $("begin").focus();
   }
 
+  function showWelcome() {
+    $("screen-welcome").hidden = false;
+    $("screen-root").hidden = true;
+    $("welcome-title").focus();
+  }
+
+  function hideWelcome() {
+    $("screen-welcome").hidden = true;
+    $("screen-root").hidden = false;
+  }
+
+  function commitSettings(partial) {
+    var next = window.HelloWorldStorage.saveSettings(Object.assign({}, settings, partial));
+    settings.textSize = next.textSize;
+    settings.highContrast = next.highContrast;
+    settings.reduceMotion = next.reduceMotion;
+    settings.readingSpeed = next.readingSpeed;
+    applyEnvironment();
+    return settings;
+  }
+
   function onBegin() {
-    if (!copy) {
+    if (!copy || !window.HelloWorldFlow) {
       return;
     }
-    $("next-label").textContent = copy.nextPlaceholder.label;
-    $("next-note").textContent = copy.nextPlaceholder.note;
-    $("screen-next").hidden = false;
-    $("begin").setAttribute("aria-expanded", "true");
-    $("next-label").focus();
+    window.HelloWorldFlow.open("sound");
   }
 
   function bind() {
     $("pause-stop").addEventListener("click", togglePause);
+    $("open-settings").addEventListener("click", function () {
+      if (window.HelloWorldFlow) {
+        window.HelloWorldFlow.open("settings");
+      }
+    });
     $("skip").addEventListener("click", onSkip);
     $("begin").addEventListener("click", onBegin);
     $("loading-fill").addEventListener("animationend", settleLoadingBar);
@@ -323,34 +350,61 @@
     });
   }
 
-  function validCopy(value) {
-    if (!value || !value.meta || !value.shell || !value.welcome || !value.nextPlaceholder) {
+  function hasStrings(value, keys) {
+    if (!value) {
       return false;
     }
-    if (typeof value.meta.documentTitle !== "string") {
-      return false;
-    }
-    if (!stringList(value.welcome.lines) || value.welcome.lines.length !== 3) {
-      return false;
-    }
-    var shellKeys = ["draftBadge", "pauseStop", "pausedNote", "loadingLabel", "loadingValueText", "skipToContent"];
-    var welcomeKeys = ["title", "introLabel", "skip", "begin"];
-    var nextKeys = ["label", "note"];
     var i;
-    for (i = 0; i < shellKeys.length; i += 1) {
-      if (typeof value.shell[shellKeys[i]] !== "string") {
+    for (i = 0; i < keys.length; i += 1) {
+      if (typeof value[keys[i]] !== "string" || value[keys[i]].length === 0) {
         return false;
       }
     }
-    for (i = 0; i < welcomeKeys.length; i += 1) {
-      if (typeof value.welcome[welcomeKeys[i]] !== "string") {
-        return false;
-      }
+    return true;
+  }
+
+  function validCopy(value) {
+    if (!value || !value.meta || typeof value.meta.documentTitle !== "string") {
+      return false;
     }
-    for (i = 0; i < nextKeys.length; i += 1) {
-      if (typeof value.nextPlaceholder[nextKeys[i]] !== "string") {
-        return false;
-      }
+    if (!stringList(value.welcome && value.welcome.lines) || value.welcome.lines.length !== 3) {
+      return false;
+    }
+    if (!hasStrings(value.shell, ["draftBadge", "pauseStop", "pausedNote", "loadingLabel", "loadingValueText", "skipToContent", "settings"])) {
+      return false;
+    }
+    if (!hasStrings(value.nav, ["back", "continue"])) {
+      return false;
+    }
+    if (!hasStrings(value.welcome, ["title", "introLabel", "skip", "begin"])) {
+      return false;
+    }
+    if (!hasStrings(value.sound, ["title", "driving", "play", "stopSound", "showCaption", "hideCaption"])) {
+      return false;
+    }
+    if (!hasStrings(value.prompt, ["title", "another", "chooseForMe", "illChoose"])) {
+      return false;
+    }
+    if (!hasStrings(value.eyes, ["title", "note", "start", "done"])) {
+      return false;
+    }
+    if (!hasStrings(value.respond, ["title", "drawHelp", "undo", "themeHelp", "needTag"])) {
+      return false;
+    }
+    if (!hasStrings(value.save, ["title", "leave", "keep", "shareRule"])) {
+      return false;
+    }
+    if (!hasStrings(value.gallery, ["title", "empty", "takeBack"])) {
+      return false;
+    }
+    if (!hasStrings(value.week, ["title", "empty", "countMany", "countOne", "question"])) {
+      return false;
+    }
+    if (!hasStrings(value.receive, ["title", "intro", "sit", "notToday"])) {
+      return false;
+    }
+    if (!hasStrings(value.settings, ["title", "textSize", "smallerMark", "largerMark", "contrast", "motion", "speed"])) {
+      return false;
     }
     return typeof value.loadNote === "string";
   }
@@ -383,19 +437,19 @@
       if (!item) {
         return false;
       }
-      var fields = ["title", "file", "theme", "caption", "credit", "license"];
+      var fields = ["id", "title", "file", "theme", "caption", "credit", "license"];
       return fields.every(function (field) {
         return typeof item[field] === "string" && item[field].length > 0;
       });
     });
   }
 
-  function loadJson(path) {
-    return fetch(path).then(function (response) {
-      if (!response.ok) {
-        throw new Error("load");
-      }
-      return response.json();
+  function validSamples(value) {
+    if (!Array.isArray(value) || value.length < 8) {
+      return false;
+    }
+    return value.every(function (item) {
+      return item && typeof item.id === "string" && typeof item.theme === "string" && typeof item.title === "string" && typeof item.file === "string" && item.file.indexOf("content/samples/") === 0 && item.file.indexOf("..") === -1;
     });
   }
 
@@ -412,28 +466,33 @@
       }, 3200);
     }
 
-    Promise.all([
-      loadJson("content/copy.json"),
-      loadJson("content/prompts.json"),
-      loadJson("content/soundscapes.json")
-    ]).then(function (loaded) {
-      var nextCopy = loaded[0];
-      var prompts = loaded[1];
-      var soundscapes = loaded[2];
-      if (!validCopy(nextCopy) || !validPrompts(prompts) || !validSoundscapes(soundscapes)) {
-        showLoadNote(nextCopy && nextCopy.loadNote);
-        return;
-      }
-      copy = nextCopy;
-      lines = copy.welcome.lines.slice();
-      applyCopy();
-      if (reduceMotion || barSettled) {
-        settleLoadingBar();
-      }
-      playIntro();
-    }).catch(function () {
-      showLoadNote(FALLBACK_LOAD_NOTE);
+    var content = window.HelloWorldContent || {};
+    var nextCopy = content.copy;
+    var prompts = content.prompts;
+    var soundscapes = content.soundscapes;
+    var samples = content.samples;
+    if (!validCopy(nextCopy) || !validPrompts(prompts) || !validSoundscapes(soundscapes) || !validSamples(samples)) {
+      showLoadNote(nextCopy && nextCopy.loadNote);
+      return;
+    }
+    copy = nextCopy;
+    lines = copy.welcome.lines.slice();
+    window.HelloWorldFlow.init({
+      copy: copy,
+      prompts: prompts,
+      soundscapes: soundscapes,
+      samples: samples,
+      getSettings: function () { return settings; },
+      getPaused: function () { return paused; },
+      commitSettings: commitSettings,
+      showWelcome: showWelcome,
+      hideWelcome: hideWelcome
     });
+    applyCopy();
+    if (reduceMotion || barSettled) {
+      settleLoadingBar();
+    }
+    playIntro();
   }
 
   if (document.readyState === "loading") {

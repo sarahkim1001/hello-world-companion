@@ -2,12 +2,6 @@
 
 Early draft of a quiet, local prototype. It does not diagnose, interpret, or provide treatment.
 
-Open it from this folder with a local static server so the content files load from the same origin:
+Open `index.html` in a browser. The page reads its words from script files in this folder, so a local server is not required.
 
-```
-python3 -m http.server 8765
-```
-
-Then visit `http://127.0.0.1:8765/`.
-
-Interface sentences live in `content/copy.json`. Memory prompts live in `content/prompts.json`. Soundscape placeholders live in `content/soundscapes.json`. Decisions are in `DECISIONS.md`. Limits are in `NOT_CLAIMED.md`.
+Interface sentences live in `content/copy.js`. Memory prompts live in `content/prompts.js`. Soundscape placeholders and silent audio live in `content/soundscapes.js` and `audio/`. Sample drawings live in `content/sample-drawings.js` and `content/samples/`. Decisions are in `DECISIONS.md`. Limits are in `NOT_CLAIMED.md`.
